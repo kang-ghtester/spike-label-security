@@ -11,8 +11,9 @@ on:
       - prereleased
       - released
 
-permissions:
-  contents: read
+env:
+  ORGANIZATION: newrelic
+  MEMBER: "${{ github.triggering_actor }}"
 
 jobs:
   remove-label:
@@ -21,24 +22,22 @@ jobs:
     steps:
     - name: Look for the actor's organizations
       run: |
-        echo ${{ github.actor }} ${{ github.triggering_actor }}
-        
-        curl -s \
+        RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}"\
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          https://api.github.com/users/${{ github.actor }}
+          "https://api.github.com/orgs/$ORGANIZATION/members/$MEMBER")
 
-        curl -s \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          https://api.github.com/users/${{ github.actor }}/orgs
+        echo RESPONSE_CODE="$RESPONSE_CODE" > $GITHUB_ENV
 
-        curl -s \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          https://api.github.com/orgs/${{ github.repository_owner }}/memberships/${{ github.actor }}
+        echo actor: ${{ github.actor }}
+        echo triggering_actor: ${{ github.triggering_actor }}
 
-        curl -s \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          https://api.github.com/orgs/newrelic/memberships/${{ github.actor }}
+    - run: echo $RESPONSE_CODE
+
+      # 204 - Response if requester is an organization member and user is a member
+      # 302 - Response if requester is not an organization member
+      # 404 - Not Found if requester is an organization member and user is not a member
+    - if: env.RESPONSE_CODE != '204'
+      uses: actions-ecosystem/action-remove-labels@v1
+      with:
+        labels: allow-execution
