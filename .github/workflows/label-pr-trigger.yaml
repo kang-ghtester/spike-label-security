@@ -20,12 +20,17 @@ jobs:
       run: |
         echo ${{ github.actor }} ${{ github.triggering_actor }}
         
-        curl \
+        curl -s \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: token ${{ github.token }}" \
+          https://api.github.com/users/${{ github.actor }}
+
+        curl -s \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: token ${{ github.token }}" \
           https://api.github.com/users/${{ github.actor }}/orgs
 
-        curl \
+        curl -s \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: token ${{ github.token }}" \
           https://api.github.com/users/${{ github.triggering_actor }}/orgs
