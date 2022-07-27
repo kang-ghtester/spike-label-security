@@ -29,3 +29,8 @@ jobs:
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: token ${{ github.token }}" \
           https://api.github.com/orgs/${{ github.repository_owner }}/memberships/${{ github.actor }}
+
+        curl -s \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: token ${{ github.token }}" \
+          https://api.github.com/orgs/newrelic/memberships/${{ github.actor }}
