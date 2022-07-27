@@ -28,9 +28,4 @@ jobs:
         curl -s \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: token ${{ github.token }}" \
-          https://api.github.com/users/${{ github.actor }}/orgs
-
-        curl -s \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: token ${{ github.token }}" \
-          https://api.github.com/users/${{ github.triggering_actor }}/orgs
+          https://api.github.com/orgs/${{ github.repository_owner }}/memberships/${{ github.actor }}
