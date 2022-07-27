@@ -12,9 +12,7 @@ on:
       - released
 
 permissions:
-  metadata: read
   contents: read
-  pull-requests: read
 
 jobs:
   remove-label:
