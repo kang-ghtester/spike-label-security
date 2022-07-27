@@ -22,6 +22,8 @@ jobs:
     steps:
     - name: Look for the actor's organizations
       run: |
+        echo "https://api.github.com/orgs/$ORGANIZATION/members/$MEMBER"
+        
         RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}"\
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
