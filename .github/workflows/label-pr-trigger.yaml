@@ -18,6 +18,13 @@ jobs:
     steps:
     - name: Look for the actor's organizations
       run: |
+        echo ${{ github.actor }} ${{ github.triggering_actor }}
+        
+        curl \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: token ${{ github.token }}" \
+          https://api.github.com/users/${{ github.actor }}/orgs
+
         curl \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: token ${{ github.token }}" \
