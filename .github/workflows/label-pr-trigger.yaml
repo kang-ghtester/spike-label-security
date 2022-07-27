@@ -11,6 +11,11 @@ on:
       - prereleased
       - released
 
+permissions:
+  metadata: read
+  contents: read
+  pull-requests: read
+
 jobs:
   remove-label:
     name: Remove the label in case the actor is not in our org
