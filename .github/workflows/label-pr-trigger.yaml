@@ -1,0 +1,24 @@
+name: Test Pull request and release
+on:
+  pull_request:
+    types:
+      - opened  # De default from github
+      - reopened  # De default from github
+      - synchronize  # De default from github
+      - labeled  # When a label has been added
+  release:
+    types:
+      - prereleased
+      - released
+
+jobs:
+  remove-label:
+    name: Remove the label in case the actor is not in our org
+    runs-on: ubuntu-latest
+    steps:
+    - name: Look for the actor's organizations
+      run: |
+        curl \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: token ${{ github.token }}" \
+          https://api.github.com/users/${{ github.triggering_actor }}/orgs
