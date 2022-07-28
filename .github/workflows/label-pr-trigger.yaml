@@ -12,7 +12,7 @@ on:
       - released
 
 env:
-  ORGANIZATION: newrelic
+  ORGANIZATION: "${{ github.repository_owner }}"
   MEMBER: "${{ github.triggering_actor }}"
 
 jobs:
@@ -29,12 +29,9 @@ jobs:
           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           "https://api.github.com/orgs/$ORGANIZATION/members/$MEMBER")
 
-        echo RESPONSE_CODE="$RESPONSE_CODE" > $GITHUB_ENV
-
         echo actor: ${{ github.actor }}
         echo triggering_actor: ${{ github.triggering_actor }}
-
-    - run: echo $RESPONSE_CODE
+        echo RESPONSE_CODE="$RESPONSE_CODE" | tee $GITHUB_ENV
 
       # 204 - Response if requester is an organization member and user is a member
       # 302 - Response if requester is not an organization member
