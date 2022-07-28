@@ -20,7 +20,7 @@ jobs:
     steps:
     - name: Check if organization member
       id: is_organization_member
-      uses: jamessingleton/is-organization-member@v1
+      uses: jamessingleton/is-organization-member@1.0.1
       with:
       # organization: "${{ github.repository_owner }}"
         organization: "newrelic"
@@ -28,7 +28,7 @@ jobs:
         token: "${{ secrets.GITHUB_TOKEN }}"
     - name: Check if organization member
       id: is_organization_member_roobre
-      uses: jamessingleton/is-organization-member@v1
+      uses: jamessingleton/is-organization-member@1.0.1
       with:
       # organization: "${{ github.repository_owner }}"
         organization: "newrelic"
@@ -36,7 +36,7 @@ jobs:
         token: "${{ secrets.GITHUB_TOKEN }}"
     - name: Check if organization member
       id: is_organization_member_ghtester
-      uses: jamessingleton/is-organization-member@v1
+      uses: jamessingleton/is-organization-member@1.0.1
       with:
       # organization: "${{ github.repository_owner }}"
         organization: "newrelic"
