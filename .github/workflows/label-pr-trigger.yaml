@@ -15,8 +15,10 @@ permissions: write-all
 
 jobs:
   remove-label:
-    name: Remove the label in case the actor is not in our org
+    name: Remove the label in case the actor is not in our organization
     runs-on: ubuntu-latest
+    outputs:
+      is_organization_member: ${{ steps.is_organization_member.outputs.result }}
     steps:
     - name: Check if organization member
       id: is_organization_member
@@ -26,30 +28,37 @@ jobs:
         organization: "newrelic"
         username: "${{ github.triggering_actor }}"
         token: "${{ secrets.GITHUB_TOKEN }}"
-    - name: Check if organization member
-      id: is_organization_member_roobre
-      uses: jamessingleton/is-organization-member@1.0.1
-      with:
-      # organization: "${{ github.repository_owner }}"
-        organization: "newrelic"
-        username: "roobre"
-        token: "${{ secrets.GITHUB_TOKEN }}"
-    - name: Check if organization member
-      id: is_organization_member_ghtester
-      uses: jamessingleton/is-organization-member@1.0.1
-      with:
-      # organization: "${{ github.repository_owner }}"
-        organization: "newrelic"
-        username: "kang-ghtester"
-        token: "${{ secrets.GITHUB_TOKEN }}"
 
-    - name: Run a few things
+    - name: debug information
       run: |
-        echo is_organization_member:          ${{ steps.is_organization_member.outputs.result }} 
-        echo is_organization_member_roobre:   ${{ steps.is_organization_member_roobre.outputs.result }} 
-        echo is_organization_member_ghtester: ${{ steps.is_organization_member_ghtester.outputs.result }} 
+        cat <<EOT
+        repository_owner: "${{ github.repository_owner }}"
+        triggering_actor: "${{ github.triggering_actor }}"
+        actor:            "${{ github.actor }}"
+        EOT
 
-    #- if: steps.is_organization_member.outputs.result == false
-    #  uses: actions-ecosystem/action-remove-labels@v1
-    #  with:
-    #    labels: allow-execution
+    - name: Remove label in case the actor is not
+      if: steps.is_organization_member.outputs.result == false
+      uses: actions-ecosystem/action-remove-labels@v1
+      with:
+        labels: allow-execution
+
+  step-running-without-label:
+    name: Run testing
+    runs-on: ubuntu-latest
+    needs:
+      - remove-label
+    steps:
+      - name: This should run always
+        run: |
+          echo make build test
+
+      - name: This interrupts the pipeline for people who are outside of our organization.
+        if: needs.remove-label.outputs.is_organization_member == false
+        run: |
+          exit 1
+
+      - name: This interrupts the pipeline for people who are outside of our organization.
+        if: needs.remove-label.outputs.is_organization_member == true
+        run: |
+          echo run the e2e
