@@ -11,6 +11,8 @@ on:
       - prereleased
       - released
 
+permissions: read-all
+
 env:
   ORGANIZATION: "${{ github.repository_owner }}"
   MEMBER: "${{ github.triggering_actor }}"
