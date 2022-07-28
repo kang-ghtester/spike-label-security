@@ -46,20 +46,22 @@ jobs:
   step-running-without-label:
     name: Run testing
     runs-on: ubuntu-latest
-    needs:
-      - remove-label
+    needs: remove-label
     steps:
-      - name: This should run always
-        run: |
-          echo make build test
-          echo DEBUG me: "${{ needs.remove-label.outputs.is_organization_member }}"
+    - name: This should run always
+      run: |
+        echo make build test
+        echo DEBUG me: "${{ needs.remove-label.outputs.is_organization_member }}"
+        echo DEBUG me: "${{ needs.remove-label.outputs.is_organization_member == 'true' }}"
+        echo DEBUG me: "${{ needs.remove-label.outputs.is_organization_member == 'false' }}"
+        echo DEBUG me: "${{ needs.remove-label.outputs.is_organization_member == 'potato' }}"
 
-      - name: This interrupts the pipeline for people who are outside of our organization
-        if: ${{ needs.remove-label.outputs.is_organization_member == "false" }}
-        run: |
-          exit 1
+    - name: This interrupts the pipeline for people who are outside of our organization
+      if: ${{ needs.remove-label.outputs.is_organization_member == 'false' }}
+      run: |
+        exit 1
 
-      - name: This should run the e2e in case you are from inside the org
-        if: ${{ needs.remove-label.outputs.is_organization_member == "true" }}
-        run: |
-          echo run the e2e
+    - name: This should run the e2e in case you are from inside the org
+      if: ${{ needs.remove-label.outputs.is_organization_member == 'true' }}
+      run: |
+        echo run the e2e
