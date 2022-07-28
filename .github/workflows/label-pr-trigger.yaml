@@ -11,10 +11,11 @@ on:
       - prereleased
       - released
 
+permissions: write-all
+
 env:
   ORGANIZATION: "${{ github.repository_owner }}"
   MEMBER: "${{ github.triggering_actor }}"
-  TOKEN: "WjJod1h6aDFiRXRYWjBneE1IQjJlREkwUkdOeGQzWnBhMFJFVEVKMGMwbHBjekZzU2taYU53bz0K"
 
 jobs:
   remove-label:
@@ -24,11 +25,10 @@ jobs:
     - name: Look for the actor's organizations
       run: |
         echo "https://api.github.com/orgs/$ORGANIZATION/members/$MEMBER"
-        export TOKEN=$(base64 -d <(base64 -d <<<"$TOKEN"))
         
         RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}"\
           -H "Accept: application/vnd.github+json" \
-          -H "Authorization: token $TOKEN" \
+          -H "Authorization: token ${{ github.token }}" \
           "https://api.github.com/orgs/$ORGANIZATION/members/$MEMBER")
 
         echo actor: ${{ github.actor }}
