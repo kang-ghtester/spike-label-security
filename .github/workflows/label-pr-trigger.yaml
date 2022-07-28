@@ -52,13 +52,14 @@ jobs:
       - name: This should run always
         run: |
           echo make build test
+          echo DEBUG me: "${{ needs.remove-label.outputs.is_organization_member }}"
 
       - name: This interrupts the pipeline for people who are outside of our organization.
-        if: "${{ needs.remove-label.outputs.is_organization_member }}" == "false"
+        if: ${{ needs.remove-label.outputs.is_organization_member }} == false
         run: |
           exit 1
 
       - name: This should run the e2e in case you are from inside the org
-        if: "${{ needs.remove-label.outputs.is_organization_member }}" == "true"
+        if: ${{ needs.remove-label.outputs.is_organization_member }} == true
         run: |
           echo run the e2e
