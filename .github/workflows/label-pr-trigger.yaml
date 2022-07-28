@@ -13,32 +13,43 @@ on:
 
 permissions: write-all
 
-env:
-  ORGANIZATION: "${{ github.repository_owner }}"
-  MEMBER: "${{ github.triggering_actor }}"
-
 jobs:
   remove-label:
     name: Remove the label in case the actor is not in our org
     runs-on: ubuntu-latest
     steps:
-    - name: Look for the actor's organizations
-      run: |
-        echo "https://api.github.com/orgs/$ORGANIZATION/members/$MEMBER"
-        
-        RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}"\
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: token ${{ github.token }}" \
-          "https://api.github.com/orgs/$ORGANIZATION/members/$MEMBER")
-
-        echo actor: ${{ github.actor }}
-        echo triggering_actor: ${{ github.triggering_actor }}
-        echo RESPONSE_CODE="$RESPONSE_CODE" | tee $GITHUB_ENV
-
-      # 204 - Response if requester is an organization member and user is a member
-      # 302 - Response if requester is not an organization member
-      # 404 - Not Found if requester is an organization member and user is not a member
-    - if: env.RESPONSE_CODE != '204'
-      uses: actions-ecosystem/action-remove-labels@v1
+    - name: Check if organization member
+      id: is_organization_member
+      uses: jamessingleton/is-organization-member@v1
       with:
-        labels: allow-execution
+      # organization: "${{ github.repository_owner }}"
+        organization: "newrelic"
+        username: "${{ github.triggering_actor }}"
+        token: "${{ secrets.GITHUB_TOKEN }}"
+    - name: Check if organization member
+      id: is_organization_member_roobre
+      uses: jamessingleton/is-organization-member@v1
+      with:
+      # organization: "${{ github.repository_owner }}"
+        organization: "newrelic"
+        username: "roobre"
+        token: "${{ secrets.GITHUB_TOKEN }}"
+    - name: Check if organization member
+      id: is_organization_member_ghtester
+      uses: jamessingleton/is-organization-member@v1
+      with:
+      # organization: "${{ github.repository_owner }}"
+        organization: "newrelic"
+        username: "kang-ghtester"
+        token: "${{ secrets.GITHUB_TOKEN }}"
+
+    - name: Run a few things
+      run: |
+        echo is_organization_member:          ${{ steps.is_organization_member.outputs.result }} 
+        echo is_organization_member_roobre:   ${{ steps.is_organization_member_roobre.outputs.result }} 
+        echo is_organization_member_ghtester: ${{ steps.is_organization_member_ghtester.outputs.result }} 
+
+    #- if: steps.is_organization_member.outputs.result == false
+    #  uses: actions-ecosystem/action-remove-labels@v1
+    #  with:
+    #    labels: allow-execution
