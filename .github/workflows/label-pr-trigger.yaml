@@ -38,7 +38,7 @@ jobs:
         EOT
 
     - name: Remove label in case the actor is not in the organization
-      if: steps.is_organization_member.outputs.result == false
+      if: ${{ steps.is_organization_member.outputs.result == 'false' }}
       uses: actions-ecosystem/action-remove-labels@v1
       with:
         labels: allow-execution
